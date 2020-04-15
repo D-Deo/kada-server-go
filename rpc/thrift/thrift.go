@@ -6,7 +6,14 @@ import (
 	"github.com/apache/thrift/lib/go/thrift"
 )
 
-func Start(port int32, processor thrift.TProcessor, protocol string, buffered bool, framed bool, secure bool) error {
+func NewServer() *Server {
+	return &Server{}
+}
+
+type Server struct {
+}
+
+func (o *Server) Start(port int, processor thrift.TProcessor, protocol string, buffered bool, framed bool, secure bool) error {
 	var protocolFactory thrift.TProtocolFactory
 	switch protocol {
 	case "compact":
@@ -31,7 +38,6 @@ func Start(port int32, processor thrift.TProcessor, protocol string, buffered bo
 		transportFactory = thrift.NewTFramedTransportFactory(transportFactory)
 	}
 
-	//host := "127.0.0.1"
 	addr := fmt.Sprintf(":%d", port)
 
 	var transport thrift.TServerTransport

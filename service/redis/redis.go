@@ -3,15 +3,37 @@ package redis
 import (
 	"fmt"
 	"log"
+	"time"
 
 	"github.com/gomodule/redigo/redis"
 )
 
-type Redis struct {
+type Client struct {
 	Pool *redis.Pool
 }
 
-func (o *Redis) Exec(cmd string, key interface{}, args ...interface{}) (interface{}, error) {
+func NewClient(host string, port int, db int, password string) *Client {
+	client := new(Client)
+	client.Pool = &redis.Pool{
+		MaxIdle:     256,
+		MaxActive:   0,
+		IdleTimeout: time.Duration(120),
+		Dial: func() (redis.Conn, error) {
+			return redis.Dial(
+				"tcp",
+				fmt.Sprintf("%s:%d", host, port),
+				redis.DialReadTimeout(time.Duration(1000)*time.Millisecond),
+				redis.DialWriteTimeout(time.Duration(1000)*time.Millisecond),
+				redis.DialConnectTimeout(time.Duration(1000)*time.Millisecond),
+				redis.DialDatabase(db),
+				redis.DialPassword(password),
+			)
+		},
+	}
+	return client
+}
+
+func (o *Client) Exec(cmd string, key interface{}, args ...interface{}) (interface{}, error) {
 	conn := o.Pool.Get()
 	if err := conn.Err(); err != nil {
 		return nil, fmt.Errorf("[redis] conn get err: %w", err)
@@ -32,7 +54,16 @@ func (o *Redis) Exec(cmd string, key interface{}, args ...interface{}) (interfac
 	return reply, nil
 }
 
-func (o *Redis) HGetAll(key string) map[string]string {
+func (o *Client) Get(key string) string {
+	ret, err := redis.String(o.Exec("GET", key))
+	if err != nil {
+		log.Printf("[redis] get %v err: %v", key, err)
+		return ""
+	}
+	return ret
+}
+
+func (o *Client) HGetAll(key string) map[string]string {
 	ret, err := redis.StringMap(o.Exec("HGETALL", key))
 	if err != nil {
 		log.Printf("[redis] hgetall %s err: %v", key, err)

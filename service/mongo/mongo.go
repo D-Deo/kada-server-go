@@ -12,18 +12,17 @@ import (
 // 查询参数
 type Filter bson.M
 
-type MongoDB struct {
+type Client struct {
 	database *mongo.Database // 数据库实例
 }
 
-func (o *MongoDB) Connect(uri string, db string) error {
+func (o *Client) Connect(uri string, db string) error {
 	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
 	if err != nil {
 		return err
 	}
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-
 	err = client.Connect(ctx)
 	if err != nil {
 		return err
@@ -34,12 +33,12 @@ func (o *MongoDB) Connect(uri string, db string) error {
 }
 
 // 检查连接是否存在
-func (o *MongoDB) Ping() error {
+func (o *Client) Ping() error {
 	return o.database.Client().Ping(context.TODO(), nil)
 }
 
 // 查找数据
-func (o *MongoDB) FindOne(collection string, filter Filter, result interface{}) error {
+func (o *Client) FindOne(collection string, filter Filter, result interface{}) error {
 	if err := o.Ping(); err != nil {
 		return err
 	}
@@ -51,7 +50,7 @@ func (o *MongoDB) FindOne(collection string, filter Filter, result interface{}) 
 }
 
 // 插入数据
-func (o *MongoDB) InsertOne(collection string, document interface{}) error {
+func (o *Client) InsertOne(collection string, document interface{}) error {
 	if err := o.Ping(); err != nil {
 		return err
 	}
@@ -66,7 +65,7 @@ func (o *MongoDB) InsertOne(collection string, document interface{}) error {
 }
 
 // 更新数据
-func (o *MongoDB) UpdateOne(collection string, filter Filter, document interface{}) error {
+func (o *Client) UpdateOne(collection string, filter Filter, document interface{}) error {
 	if err := o.Ping(); err != nil {
 		return err
 	}
@@ -82,7 +81,7 @@ func (o *MongoDB) UpdateOne(collection string, filter Filter, document interface
 }
 
 // 更新数据，如果没有则插入数据
-func (o *MongoDB) UpsertOne(collection string, filter Filter, document interface{}) error {
+func (o *Client) UpsertOne(collection string, filter Filter, document interface{}) error {
 	if err := o.Ping(); err != nil {
 		return err
 	}
@@ -100,7 +99,7 @@ func (o *MongoDB) UpsertOne(collection string, filter Filter, document interface
 }
 
 // 删除数据
-func (o *MongoDB) DeleteOne(collection string, filter Filter) error {
+func (o *Client) DeleteOne(collection string, filter Filter) error {
 	if err := o.Ping(); err != nil {
 		return err
 	}

@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"fmt"
+	"log"
 )
 
 const (
@@ -9,23 +10,29 @@ const (
 )
 
 var (
-	dbs map[string]*MongoDB
+	clients map[string]*Client
 )
 
 func init() {
-	dbs = make(map[string]*MongoDB)
+	clients = make(map[string]*Client)
 }
 
-// 启动服务
-func Start(uri string, db string) error {
-	mongo := new(MongoDB)
+// 连接
+func Connect(uri string, db string) error {
+	mongo := new(Client)
 	if err := mongo.Connect(uri, db); err != nil {
 		return fmt.Errorf("[mongo] connect uri(%s) db(%s) err: %w", uri, db, err)
 	}
-	dbs[db] = mongo
+	clients[db] = mongo
 	return nil
 }
 
-func Db(name string) *MongoDB {
-	return dbs[name]
+// 获取
+func Get(name string) *Client {
+	client, ok := clients[name]
+	if !ok {
+		log.Panicf("[redis] no found redis client: %s", name)
+		return nil
+	}
+	return client
 }
