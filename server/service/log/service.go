@@ -1,12 +1,13 @@
-package logger
+package log
 
 import (
 	"fmt"
 	"kada/server/core/service"
+	"log"
 )
 
 const (
-	MODULE = "logger"
+	MODULE = "log"
 )
 
 var (
@@ -59,7 +60,27 @@ func Signal(format string, a ...interface{}) error {
 	return output(&LogArgs{LOG_SIGNAL, fmt.Sprintf(format, a...)})
 }
 
-// 打印崩溃级别日志
-func Panic(format string, a ...interface{}) error {
+// 打印崩溃级别日志（格式化）
+func Dump(format string, a ...interface{}) error {
 	return output(&LogArgs{LOG_CRASH, fmt.Sprintf(format, a...)})
+}
+
+// 兼容日志崩溃函数
+func Panic(a ...interface{}) {
+	log.Panic(a...)
+}
+
+// 兼容日志打印函数
+func Print(a ...interface{}) {
+	log.Print(a...)
+}
+
+// 兼容日志打印函数（格式化）
+func Printf(format string, a ...interface{}) {
+	log.Printf(format, a...)
+}
+
+// 兼容日志打印函数
+func Fatal(a ...interface{}) {
+	log.Fatal(a...)
 }

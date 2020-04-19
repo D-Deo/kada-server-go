@@ -7,7 +7,7 @@ import (
 	
 	"kada/server/config"
 	"kada/server/core"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 )
 
 // var _server *Server
@@ -40,7 +40,7 @@ func (o *Server) Startup() error {
 		port = "10000"
 	}
 	address := fmt.Sprintf("%s:%s", host, port)
-	logger.Info("[Gate] Address", address)
+	log.Info("[Gate] Address", address)
 
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
@@ -50,7 +50,7 @@ func (o *Server) Startup() error {
 	//启动监听
 	go o.Listen(listener)
 
-	logger.Info("[Gate] Waiting For Clients ...")
+	log.Info("[Gate] Waiting For Clients ...")
 	return nil
 }
 
@@ -63,7 +63,7 @@ func (o *Server) Listen(listener net.Listener) {
 		conn, err := listener.Accept()
 		defer conn.Close()
 		if err != nil {
-			logger.Error("[Gate] Accept", err)
+			log.Error("[Gate] Accept", err)
 			continue
 		}
 
@@ -73,7 +73,7 @@ func (o *Server) Listen(listener net.Listener) {
 		session.Chan = make(chan []byte)
 		session.Conn = conn
 		o.Sessions[sid] = session
-		logger.Info(sid, "Gate Server Connect Success")
+		log.Info(sid, "Gate Server Connect Success")
 
 		go o.Handle(session)
 	}
@@ -89,7 +89,7 @@ func (o *Server) Handle(session core.Session) {
 			select {
 			case data := <-s.Chan:
 				if _, err := s.Conn.Write(data); err != nil {
-					logger.Error(s.Id, "Gate Server Write", err)
+					log.Error(s.Id, "Gate Server Write", err)
 					break
 				}
 			}
@@ -101,7 +101,7 @@ func (o *Server) Handle(session core.Session) {
 	for {
 		n, err := session.Conn.Read(data)
 		if err != nil {
-			logger.Warn(session.Id, "Gate Server Connection Error", err)
+			log.Warn(session.Id, "Gate Server Connection Error", err)
 			// o.Locker.Lock()
 			// if _, ok := o.Sessions[session.Id]; ok {
 			// 	delete(o.Sessions, session.Id)
@@ -110,7 +110,7 @@ func (o *Server) Handle(session core.Session) {
 			return
 		}
 		buffer = Depack(session.Id, append(buffer, data[:n]...))
-		logger.Debug(session.Id, "Gate Server Receive Finish", buffer)
+		log.Debug(session.Id, "Gate Server Receive Finish", buffer)
 	}
 }
 
@@ -119,10 +119,10 @@ func (o *Server) Send(sid string, pid int32, data []byte) error {
 	if session, ok := o.Sessions[sid]; ok {
 		data = Enpack(pid, data)
 		session.Chan <- data
-		logger.Debug(sid, "Gate Server send pid", pid, "data", core.PrintBuffer(data))
+		log.Debug(sid, "Gate Server send pid", pid, "data", core.PrintBuffer(data))
 		return nil
 	}
-	logger.Warn(sid, "Gate Server no found client")
+	log.Warn(sid, "Gate Server no found client")
 	return nil
 }
 
@@ -132,11 +132,11 @@ func (o *Server) SendAll(pid int32, data []byte) error {
 	// 	if conn != nil {
 	// 		data = Enpack(pid, data)
 	// 		if _, err := conn.Write(data); err != nil {
-	// 			logger.Error(sid, "Gate Server write error:", err.Error())
+	// 			log.Error(sid, "Gate Server write error:", err.Error())
 	// 			continue
 	// 		}
 	// 	}
 	// }
-	logger.Info("Gate Server send all pid", pid, "data", data)
+	log.Info("Gate Server send all pid", pid, "data", data)
 	return nil
 }

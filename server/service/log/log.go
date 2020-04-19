@@ -1,8 +1,8 @@
-//Package logger 日志模块.
+//Package log 日志模块.
 //	向控制台和文件输出日志信息
 //	[DEBUG]调试类型日志只向控制台打印
 //	[SIGN]信号类型的日志，打印级别是最高的
-package logger
+package log
 
 import (
 	"encoding/csv"

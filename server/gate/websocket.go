@@ -2,7 +2,7 @@ package gate
 
 import (
 	"kada/server/core"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 	"net/http"
 
 	"golang.org/x/net/websocket"
@@ -28,7 +28,7 @@ func (o *WebSocket) Connect(port string, path string) {
 	addr := ":" + port
 	http.Handle(path, websocket.Handler(o.Handler))
 	if err := http.ListenAndServe(addr, nil); err != nil {
-		logger.Error("WebSocket", err)
+		log.Error("WebSocket", err)
 	}
 }
 
@@ -40,13 +40,13 @@ func (o *WebSocket) Handler(ws *websocket.Conn) {
 	session.Id = sid
 	session.WSConn = ws
 	o.Sessions[sid] = session
-	logger.Info("WebSocket", sid, "Connect Success")
+	log.Info("WebSocket", sid, "Connect Success")
 
 	for {
 		var data []byte
 
 		if err := websocket.Message.Receive(ws, &data); err != nil {
-			logger.Warn("WebSocket", session.Id, "Receive Error", err)
+			log.Warn("WebSocket", session.Id, "Receive Error", err)
 			return
 		}
 

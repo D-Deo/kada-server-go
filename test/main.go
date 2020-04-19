@@ -4,15 +4,14 @@ import (
 	"kada/server/core"
 	"kada/server/core/service"
 	"kada/server/service/console"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 	"kada/server/utils/config"
 	"kada/test/user"
-	"log"
 	"runtime"
 )
 
 func show(args ...string) {
-	logger.Warn("[main] server status NumCPU(%d) NumGoroutine(%d) NumCgoCall(%d)", runtime.NumCPU(), runtime.NumGoroutine(), runtime.NumCgoCall())
+	log.Warn("[main] server status NumCPU(%d) NumGoroutine(%d) NumCgoCall(%d)", runtime.NumCPU(), runtime.NumGoroutine(), runtime.NumCgoCall())
 }
 
 func test1(args ...string) {
@@ -26,10 +25,10 @@ func test1(args ...string) {
 	
 	var ret user.CreateBack
 	if err := service.Call("user", "Create", req, &ret); err != nil {
-		logger.Panic("[test1] user create err: %v", err)
+		log.Panic("[test1] user create err: %v", err)
 	}
 	
-	logger.Info("[test1] user create ret: %v", ret.User)
+	log.Info("[test1] user create ret: %v", ret.User)
 }
 
 func test2(args ...string) {
@@ -43,10 +42,10 @@ func test2(args ...string) {
 	
 	var ret user.CreateBack
 	if err := user.Call("Create", req, &ret); err != nil {
-		logger.Panic("[test2] user create err: %v", err)
+		log.Panic("[test2] user create err: %v", err)
 	}
 	
-	logger.Info("[test2] user create ret: %v", ret.User)
+	log.Info("[test2] user create ret: %v", ret.User)
 }
 
 func main() {
@@ -62,11 +61,11 @@ func main() {
 	}
 	
 	// 初始化日志
-	if err := logger.Load("test"); err != nil {
+	if err := log.Load("test"); err != nil {
 		log.Panic(err)
 	}
 	
-	logger.Signal("[main] monitor startup CPU: %d GOMAXPROC: %d", ncpu, ngoc)
+	log.Signal("[main] monitor startup CPU: %d GOMAXPROC: %d", ncpu, ngoc)
 	
 	// ex: 1
 	//service.Register("user", new(user.Handler))

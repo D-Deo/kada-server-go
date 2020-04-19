@@ -2,7 +2,7 @@ package user
 
 import (
 	"kada/server/core"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 )
 
 //Handler 用户控制器
@@ -10,7 +10,7 @@ type Handler int
 
 //Create 创建用户
 func (o *Handler) Create(args *CreateArgs, back *CreateBack) error {
-	logger.Info("[user] create args: %v", args)
+	log.Info("[user] create args: %v", args)
 	
 	user := new(User)
 	user.ID = core.CreateUID()
@@ -25,6 +25,6 @@ func (o *Handler) Create(args *CreateArgs, back *CreateBack) error {
 	user.Ticket = 100
 	
 	back.User = user
-	logger.Info("[user] create back: %v", back)
+	log.Info("[user] create back: %v", back)
 	return nil
 }

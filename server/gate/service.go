@@ -3,7 +3,7 @@ package gate
 import (
 	"kada/server/config"
 	"kada/server/core"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 )
 
 const (
@@ -17,7 +17,7 @@ var (
 
 //Startup 启动服务
 func Startup() error {
-	logger.Info("[Gate] Service Startup ...")
+	log.Info("[Gate] Service Startup ...")
 
 	mode, ok := config.I[config.GATE][config.GATE_MODE]
 	if !ok {
@@ -32,7 +32,7 @@ func Startup() error {
 		s := new(WServer)
 		_server = s
 	default:
-		logger.Error("[Gate] UnKnow Mode", mode)
+		log.Error("[Gate] UnKnow Mode", mode)
 		return core.ErrServer
 	}
 
@@ -40,7 +40,7 @@ func Startup() error {
 		return err
 	}
 
-	logger.Info("[Gate] Service Finish ...")
+	log.Info("[Gate] Service Finish ...")
 	return nil
 }
 

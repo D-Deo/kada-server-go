@@ -2,7 +2,7 @@ package gate
 
 import (
 	"kada/server/core"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 )
 
 const (
@@ -17,7 +17,7 @@ func Enpack(head int32, data []byte) []byte {
 
 //Depack 解包
 func Depack(sid string, buffer []byte) []byte {
-	logger.Debug("Gate Package Depack --", buffer)
+	log.Debug("Gate Package Depack --", buffer)
 
 	length := int32(len(buffer))
 

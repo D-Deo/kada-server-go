@@ -4,7 +4,7 @@ import (
 	"container/list"
 	"fmt"
 	"kada/server/core"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 	"kada/server/utils/config"
 	"sync"
 	
@@ -56,7 +56,7 @@ type DB struct {
 
 //Init 初始化数据库
 func (o *DB) Init() error {
-	logger.Info("[db] service startup ...")
+	log.Info("[db] service startup ...")
 	
 	host := config.GetWithDef(config.Db, config.DbHost, "127.0.0.1")
 	port := config.GetWithDef(config.Db, config.DbHost, "3306")
@@ -66,7 +66,7 @@ func (o *DB) Init() error {
 	
 	// source := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, pass, host, port, name)
 	source := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, pass, name)
-	logger.Info("[db] source: %s", source)
+	log.Info("[db] source: %s", source)
 	
 	// db, err := sql.Open("mysql", source)
 	db, err := sql.Open("postgres", source)
@@ -95,7 +95,7 @@ func (o *DB) Init() error {
 		go o.Worker(o.Chan, o.AsyncChan, i)
 	}
 	
-	logger.Signal("[db] service finish and start worker", DB_MAX_WORKER)
+	log.Signal("[db] service finish and start worker", DB_MAX_WORKER)
 	return nil
 }
 
@@ -116,15 +116,15 @@ func (o *DB) Worker(ch <-chan DBMessage, ach <-chan DBInsert, proc int) {
 	for {
 		select {
 		case msg := <-ch:
-			logger.Debug("[db] proc(%d)", proc)
+			log.Debug("[db] proc(%d)", proc)
 			err := o.Conn.QueryRow(msg.SQL, msg.Args...).Scan(msg.Dest...)
 			msg.ReCh <- err
 		case msg := <-ach:
-			logger.Info("[db] async exec proc(%d) sql(%s) args(%v)", proc, msg.SQL, msg.Args)
+			log.Info("[db] async exec proc(%d) sql(%s) args(%v)", proc, msg.SQL, msg.Args)
 			stmt, err := o.Conn.Prepare(msg.SQL)
 			defer stmt.Close()
 			if err != nil {
-				logger.Panic("[db] worker proc(%d) err(%v) - sql(%s) args(%v)", proc, err, msg.SQL, msg.Args)
+				log.Panic("[db] worker proc(%d) err(%v) - sql(%s) args(%v)", proc, err, msg.SQL, msg.Args)
 				return
 			}
 			stmt.Exec(msg.Args...)

@@ -3,7 +3,7 @@ package console
 import (
 	"bufio"
 	"kada/server/core"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 	"os"
 	"strings"
 )
@@ -39,7 +39,7 @@ func (o *Handler) Register(args *RegisterArgs, back *int) error {
 func (o *Handler) Listen(args *int, back *int) error {
 	defer core.Panic()
 	
-	logger.Signal("[console] wait listening cmd ...")
+	log.Signal("[console] wait listening cmd ...")
 	
 	reader := bufio.NewReader(os.Stdin)
 	
@@ -50,7 +50,7 @@ func (o *Handler) Listen(args *int, back *int) error {
 		}
 		
 		cmds := strings.Split(string(cmd), " ")
-		logger.Info("[console] cmd: %v", cmds)
+		log.Info("[console] cmd: %v", cmds)
 		
 		if cmds[0] == "over" {
 			return nil
@@ -58,7 +58,7 @@ func (o *Handler) Listen(args *int, back *int) error {
 		
 		fun, ok := o.FuncMap[cmds[0]]
 		if !ok {
-			logger.Warn("[console] no cmd: %s", cmds[0])
+			log.Warn("[console] no cmd: %s", cmds[0])
 			continue
 		}
 		go fun(cmds[1:]...)

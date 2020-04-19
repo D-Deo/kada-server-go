@@ -2,7 +2,7 @@ package redis
 
 import (
 	"fmt"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 	
 	"github.com/gomodule/redigo/redis"
 )
@@ -27,16 +27,16 @@ func (o *RedisService) Startup(ip string, port int32) error {
 	o.PubSubCbMap = make(map[string]func(channel, message string))
 	
 	go func() {
-		logger.Info("Redis", "服务启动 ...")
+		log.Info("Redis", "服务启动 ...")
 		for {
 			switch res := o.PubSubConn.Receive().(type) {
 			case redis.Message:
-				logger.Debug("Redis", "收到消息", res.Channel, (string)(res.Data))
+				log.Debug("Redis", "收到消息", res.Channel, (string)(res.Data))
 				o.PubSubCbMap[res.Channel](res.Channel, (string)(res.Data))
 			case redis.Subscription:
-				logger.Debug("Redis", "订阅消息", res.Channel, res.Kind, res.Count)
+				log.Debug("Redis", "订阅消息", res.Channel, res.Kind, res.Count)
 			case error:
-				logger.Error("Redis", "订阅消息失败...")
+				log.Error("Redis", "订阅消息失败...")
 				continue
 			}
 		}

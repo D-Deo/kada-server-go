@@ -2,7 +2,7 @@ package gate
 
 import (
 	"kada/server/core"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 )
 
 var (
@@ -39,7 +39,7 @@ type GateMessage struct {
 func Call(sid string, head int32, data []byte) {
 	handler, ok := _handlers[head]
 	if !ok {
-		logger.Warn("no handler head:", head)
+		log.Warn("no handler head:", head)
 		return
 	}
 
@@ -49,11 +49,11 @@ func Call(sid string, head int32, data []byte) {
 		Data: data,
 	}
 	if err := (*handler.Service).Call(handler.Handle, handler.Action, args, nil); err != nil {
-		logger.Error(sid, head, "server handle error:", err)
+		log.Error(sid, head, "server handle error:", err)
 		return
 	}
 
-	logger.Info(sid, head, "server handle success")
+	log.Info(sid, head, "server handle success")
 	return
 }
 

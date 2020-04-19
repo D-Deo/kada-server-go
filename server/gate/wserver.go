@@ -3,7 +3,7 @@ package gate
 import (
 	"kada/server/config"
 	"kada/server/core"
-	"kada/server/service/logger"
+	"kada/server/service/log"
 	"log"
 	"net/http"
 	
@@ -23,14 +23,14 @@ func (o *WServer) Startup() error {
 	if !ok {
 		port = "10000"
 	}
-	logger.Info("[Gate] WS Listen Port", port)
+	log.Info("[Gate] WS Listen Port", port)
 
 	http.Handle("/", websocket.Handler(o.Handle))
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		return err
 	}
 
-	logger.Info("[Gate] Waiting For Clients ...")
+	log.Info("[Gate] Waiting For Clients ...")
 	return nil
 }
 
@@ -43,19 +43,19 @@ func (o *WServer) Handle(ws *websocket.Conn) {
 	// session.Chan = make(chan []byte)
 	session.WSConn = ws
 	o.Sessions[sid] = session
-	logger.Info(sid, "[Gate] Connect Success")
+	log.Info(sid, "[Gate] Connect Success")
 
 	buffer := make([]byte, 0)
 	for {
 		var data []byte
 
 		if err := websocket.Message.Receive(ws, &data); err != nil {
-			logger.Warn(session.Id, "[Gate] Receive Error", err)
+			log.Warn(session.Id, "[Gate] Receive Error", err)
 			return
 		}
 
 		buffer = Depack(session.Id, append(buffer, data...))
-		logger.Debug(session.Id, "[Gate] Receive Finish", buffer)
+		log.Debug(session.Id, "[Gate] Receive Finish", buffer)
 	}
 }
 
@@ -67,10 +67,10 @@ func (o *WServer) Send(sid string, pid int32, data []byte) error {
 			log.Panic("[Gate] send", err)
 			return err
 		}
-		logger.Debug(sid, "[Gate] send pid", pid, "data", core.PrintBuffer(data))
+		log.Debug(sid, "[Gate] send pid", pid, "data", core.PrintBuffer(data))
 		return nil
 	}
-	logger.Warn(sid, "[Gate] no found client")
+	log.Warn(sid, "[Gate] no found client")
 	return nil
 }
 

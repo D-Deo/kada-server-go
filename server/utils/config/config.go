@@ -5,7 +5,7 @@ import (
 )
 
 const (
-	Logger        = "logger"
+	Logger        = "log"
 	LoggerLevel   = "level"
 	LoggerOutput  = "output"
 	LoggerCsvHead = "csv_head"
