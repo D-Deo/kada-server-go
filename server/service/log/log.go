@@ -1,108 +1,75 @@
 //Package log 日志模块.
 //	向控制台和文件输出日志信息
-//	[DEBUG]调试类型日志只向控制台打印
-//	[SIGN]信号类型的日志，打印级别是最高的
+//	[DEBUG]  调试类型日志只向控制台打印
+//	[SIGNAL] 信号类型日志，打印级别是最高的
 package log
 
 import (
-	"encoding/csv"
-	"fmt"
-	"kada/server/core"
+	"github.com/longbozhan/timewriter"
 	"kada/server/utils/config"
 	"log"
-	"os"
-	"strings"
+	"time"
 )
 
-type LevelType int
+type Level int
 
 const (
-	_ LevelType = iota
-	LvSignal
-	LvError
-	LvWarn
-	LvInfo
-	LvDebug
-	LvCrash
-)
-
-const (
-	OutputLog = "log"
-	OutputCsv = "csv"
+	_ Level = iota
+	LSignal
+	LError
+	LWarn
+	LInfo
+	LDebug
+	LCrash
 )
 
 var (
-	//LogLevel 控制台日志显示等级
-	Level LevelType
-	//LogOutput 输出类型
-	Output string
-	
-	//Logger 日志控制器
-	Logger *log.Logger
-	
-	//Writer 文件控制器
-	Writer *csv.Writer
+	_level  Level // 日志等级
+	_logger *log.Logger
 )
 
-func Load(filename string) error {
-	if filename == "" {
-		filename = "kada"
-	}
-	
-	Level = LvDebug
+// 启动日志
+func Start() {
+	_level = LDebug
 	if level, err := config.ToInt(config.Get(config.Logger, config.LoggerLevel)); err == nil {
-		Level = LevelType(level)
+		_level = Level(level)
 	}
 	
-	Output = config.GetWithDef(config.Logger, config.LoggerOutput, OutputLog)
-	filename += "." + Output
-	
-	var f *os.File
-	var err error
-	
-	newFile := false
-	
-	if core.CheckFileIsExist(filename) { //如果文件存在
-		f, err = os.OpenFile(filename, os.O_WRONLY|os.O_APPEND, 0666) //打开文件
-	} else {
-		f, err = os.Create(filename)  //创建文件
-		f.WriteString("\xEF\xBB\xBF") // 写入UTF-8 BOM
-		newFile = true
+	writer := &timewriter.TimeWriter{
+		Dir:        "./logs",
+		Compress:   true,
+		ReserveDay: 30,
 	}
-	
-	if err != nil {
-		return err
-	}
-	
-	if Output == OutputCsv {
-		Writer = csv.NewWriter(f)
-		if newFile {
-			if head, err := config.Get(config.Logger, config.LoggerCsvHead); err != nil {
-				Writer.Write(strings.Split(head, ","))
-				Writer.Flush()
-			}
-			newFile = false
-		}
-	} else {
-		// Logger = log.New(f, "", log.Ldate|log.Lmicroseconds)
-		Logger = log.New(f, "", 0)
-	}
-	
-	return nil
+	_logger = log.New(writer, "", 0)
 }
 
-//Write 写入日志
-func Write(level string, ts string, s string, v ...interface{}) {
-	if Output == OutputCsv {
-		data := []string{level, ts, fmt.Sprintf("%v", v)}
-		Writer.Write(data)
-		Writer.Flush()
-	} else {
-		var a []interface{}
-		a = append(a, ts)
-		a = append(a, s)
-		a = append(a, v...)
-		Logger.SetPrefix(level)
-		Logger.Printf(" %-26s %s", a...)
-	}
+// 写入日志
+func Write(level string, s string, v ...interface{}) {
+	ts := time.Now().Format("15:04:05.999999") //设定时间格式
+	var a []interface{}
+	a = append(a, ts)
+	a = append(a, s)
+	a = append(a, v...)
+	_logger.SetPrefix(level)
+	_logger.Printf(" %-15s %s", a...)
+}
+
+// 兼容日志崩溃函数
+func Panic(a ...interface{}) {
+	log.Panic(a...)
+}
+
+// 兼容日志打印函数
+func Print(a ...interface{}) {
+	log.Print(a...)
+}
+
+// 兼容日志打印函数（格式化）
+func Printf(format string, a ...interface{}) {
+	log.Printf(format, a...)
+}
+
+// 兼容日志打印函数
+func Fatal(a ...interface{}) {
+	log.Fatal(a...)
 }

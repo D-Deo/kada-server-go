@@ -1,7 +1,6 @@
-package service
+package core
 
 import (
-	"kada/server/core"
 	"log"
 	"reflect"
 )
@@ -39,7 +38,7 @@ func (o *Service) Start() {
 
 // 控制服务
 func (o *Service) Handle() {
-	defer core.Panic()
+	defer Panic()
 	
 	for {
 		select {

@@ -2,7 +2,6 @@ package main
 
 import (
 	"kada/server/core"
-	"kada/server/core/service"
 	"kada/server/service/console"
 	"kada/server/service/log"
 	"kada/server/utils/config"
@@ -24,7 +23,7 @@ func test1(args ...string) {
 	req.Token = "token_1"
 	
 	var ret user.CreateBack
-	if err := service.Call("user", "Create", req, &ret); err != nil {
+	if err := core.Call("user", "Create", req, &ret); err != nil {
 		log.Panic("[test1] user create err: %v", err)
 	}
 	
@@ -60,16 +59,12 @@ func main() {
 		log.Panic(err)
 	}
 	
-	// 初始化日志
-	if err := log.Load("test"); err != nil {
-		log.Panic(err)
-	}
-	
+	log.Start()
 	log.Signal("[main] monitor startup CPU: %d GOMAXPROC: %d", ncpu, ngoc)
 	
 	// ex: test1
-	service.Register("user", new(user.Handler))
-	service.Start()
+	core.Register("user", new(user.Handler))
+	core.Start()
 	
 	if err := console.Register("show", show); err != nil {
 		log.Panic(err)

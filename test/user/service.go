@@ -1,13 +1,15 @@
 package user
 
-import "kada/server/core/service"
+import (
+	"kada/server/core"
+)
 
 var (
-	_service *service.Service
+	_service *core.Service
 )
 
 func init() {
-	_service = service.NewService()
+	_service = core.NewService()
 	_service.Register("user", new(Handler))
 	_service.Start()
 }
