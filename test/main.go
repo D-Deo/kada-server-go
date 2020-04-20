@@ -67,9 +67,9 @@ func main() {
 	
 	log.Signal("[main] monitor startup CPU: %d GOMAXPROC: %d", ncpu, ngoc)
 	
-	// ex: 1
-	//service.Register("user", new(user.Handler))
-	//service.Start()
+	// ex: test1
+	service.Register("user", new(user.Handler))
+	service.Start()
 	
 	if err := console.Register("show", show); err != nil {
 		log.Panic(err)

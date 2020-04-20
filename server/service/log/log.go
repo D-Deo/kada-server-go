@@ -7,60 +7,102 @@ package log
 import (
 	"encoding/csv"
 	"fmt"
+	"kada/server/core"
+	"kada/server/utils/config"
 	"log"
+	"os"
+	"strings"
 )
 
-type LOG_LEVEL int
+type LevelType int
 
 const (
-	_ LOG_LEVEL = iota
-	LOG_SIGNAL
-	LOG_ERROR
-	LOG_WARN
-	LOG_INFO
-	LOG_DEBUG
-	LOG_CRASH
+	_ LevelType = iota
+	LvSignal
+	LvError
+	LvWarn
+	LvInfo
+	LvDebug
+	LvCrash
 )
 
 const (
-	OUTPUT_LOG = "log"
-	OUTPUT_CSV = "csv"
+	OutputLog = "log"
+	OutputCsv = "csv"
 )
 
 var (
 	//LogLevel 控制台日志显示等级
-	LogLevel LOG_LEVEL
+	Level LevelType
 	//LogOutput 输出类型
-	LogOutput string
+	Output string
 	
-	//LogWriter 日志控制器
-	LogWriter *log.Logger
+	//Logger 日志控制器
+	Logger *log.Logger
 	
-	//CsvWriter 文件控制器
-	CsvWriter *csv.Writer
+	//Writer 文件控制器
+	Writer *csv.Writer
 )
 
-//Init 初始化日志输出文件
-func Init(filename string) error {
+func Load(filename string) error {
+	if filename == "" {
+		filename = "kada"
+	}
+	
+	Level = LvDebug
+	if level, err := config.ToInt(config.Get(config.Logger, config.LoggerLevel)); err == nil {
+		Level = LevelType(level)
+	}
+	
+	Output = config.GetWithDef(config.Logger, config.LoggerOutput, OutputLog)
+	filename += "." + Output
+	
+	var f *os.File
+	var err error
+	
+	newFile := false
+	
+	if core.CheckFileIsExist(filename) { //如果文件存在
+		f, err = os.OpenFile(filename, os.O_WRONLY|os.O_APPEND, 0666) //打开文件
+	} else {
+		f, err = os.Create(filename)  //创建文件
+		f.WriteString("\xEF\xBB\xBF") // 写入UTF-8 BOM
+		newFile = true
+	}
+	
+	if err != nil {
+		return err
+	}
+	
+	if Output == OutputCsv {
+		Writer = csv.NewWriter(f)
+		if newFile {
+			if head, err := config.Get(config.Logger, config.LoggerCsvHead); err != nil {
+				Writer.Write(strings.Split(head, ","))
+				Writer.Flush()
+			}
+			newFile = false
+		}
+	} else {
+		// Logger = log.New(f, "", log.Ldate|log.Lmicroseconds)
+		Logger = log.New(f, "", 0)
+	}
+	
 	return nil
 }
 
-//Log 打印日志
-func Log(level LOG_LEVEL, v ...interface{}) {
-
-}
-
 //Write 写入日志
-func (o *Handler) Write(level string, ts string, s string, v ...interface{}) {
-	if LogOutput == OUTPUT_CSV {
+func Write(level string, ts string, s string, v ...interface{}) {
+	if Output == OutputCsv {
 		data := []string{level, ts, fmt.Sprintf("%v", v)}
-		CsvWriter.Write(data)
-		CsvWriter.Flush()
+		Writer.Write(data)
+		Writer.Flush()
 	} else {
 		var a []interface{}
 		a = append(a, ts)
+		a = append(a, s)
 		a = append(a, v...)
-		LogWriter.SetPrefix(level)
-		LogWriter.Printf("%-26s "+s, a...)
+		Logger.SetPrefix(level)
+		Logger.Printf(" %-26s %s", a...)
 	}
 }
