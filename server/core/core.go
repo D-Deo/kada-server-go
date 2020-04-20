@@ -20,17 +20,17 @@ func Panic() {
 		// exeName := os.Args[0] //获取程序名称
 		// pid := os.Getpid() //获取进程ID
 		now := time.Now() //获取当前时间
-		
+
 		time := now.Format("2006_01-02_15-04-05") //设定时间格式
 		filename := fmt.Sprintf("%s.dmp", time)   //保存错误信息文件名:程序名-进程ID-当前时间（年月日时分秒）
 		fmt.Println("dump to file", filename)
-		
+
 		f, e := os.Create(filename)
 		defer f.Close()
 		if e != nil {
 			return
 		}
-		
+
 		f.WriteString(fmt.Sprintf("%v\r\n", err)) //输出panic信息
 		f.WriteString(string(debug.Stack()))      //输出堆栈信息
 	}
@@ -111,15 +111,15 @@ func ShowName(uid uint32, username string, phone string, nickname string) string
 	if nickname != "" {
 		return nickname
 	}
-	
+
 	if username != "" {
 		return username
 	}
-	
+
 	if phone != "" {
 		return phone
 	}
-	
+
 	return strconv.Itoa(int(uid))
 }
 
@@ -154,4 +154,13 @@ func PrintBuffer(buffer []byte) string {
 	}
 	ss := strings.Join(sa, "-")
 	return ss
+}
+
+// 转 int 输出
+func Int(str string) int {
+	i, err := strconv.Atoi(str)
+	if err != nil {
+		return 0
+	}
+	return i
 }
