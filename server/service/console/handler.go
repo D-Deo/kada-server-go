@@ -3,7 +3,7 @@ package console
 import (
 	"bufio"
 	"kada/server/core"
-	"kada/server/service/log"
+	"kada/server/log"
 	"os"
 	"strings"
 )

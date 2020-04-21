@@ -59,8 +59,7 @@ func (o *Service) Handle() {
 				}
 			}
 			log.Panic("[service] recv error")
-		default:
-		
+			continue
 		}
 	}
 }

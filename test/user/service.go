@@ -8,6 +8,7 @@ var (
 	_service *core.Service
 )
 
+// 启动服务
 func init() {
 	_service = core.NewService()
 	_service.Register("user", new(Handler))

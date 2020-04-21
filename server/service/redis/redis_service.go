@@ -2,8 +2,8 @@ package redis
 
 import (
 	"fmt"
-	"kada/server/service/log"
-	
+	"kada/server/log"
+
 	"github.com/gomodule/redigo/redis"
 )
 
@@ -25,7 +25,7 @@ func (o *RedisService) Startup(ip string, port int32) error {
 	o.Conn = conn
 	o.PubSubConn = redis.PubSubConn{o.Conn}
 	o.PubSubCbMap = make(map[string]func(channel, message string))
-	
+
 	go func() {
 		log.Info("Redis", "服务启动 ...")
 		for {
@@ -41,7 +41,7 @@ func (o *RedisService) Startup(ip string, port int32) error {
 			}
 		}
 	}()
-	
+
 	return nil
 }
 

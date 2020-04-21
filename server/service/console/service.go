@@ -20,18 +20,11 @@ func init() {
 	_service.Start()
 }
 
-func Start() error {
-	if err := _service.Call(MODULE, "Start", nil, nil); err != nil {
-		return err
-	}
-	return nil
-}
-
 func Register(cmd string, fun func(...string)) error {
 	args := &RegisterArgs{}
 	args.Cmd = cmd
 	args.Func = fun
-	
+
 	if err := _service.Call(MODULE, "Register", args, nil); err != nil {
 		return err
 	}

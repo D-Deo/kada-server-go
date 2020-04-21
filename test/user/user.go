@@ -2,7 +2,7 @@ package user
 
 import (
 	"kada/server/core"
-	"kada/server/service/log"
+	"kada/server/log"
 )
 
 //Handler 用户控制器
