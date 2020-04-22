@@ -3,7 +3,7 @@ package gate
 import (
 	"kada/server/config"
 	"kada/server/core"
-	"kada/server/service/log"
+	"kada/server/log"
 	"log"
 	"net/http"
 	

@@ -2,7 +2,7 @@ package gate
 
 import (
 	"kada/server/core"
-	"kada/server/service/log"
+	"kada/server/log"
 )
 
 const (

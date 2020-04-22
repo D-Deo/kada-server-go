@@ -4,12 +4,12 @@ import (
 	"container/list"
 	"fmt"
 	"kada/server/core"
-	"kada/server/service/log"
+	"kada/server/log"
 	"kada/server/utils/config"
 	"sync"
-	
+
 	"database/sql"
-	
+
 	// _ "github.com/go-sql-driver/mysql"
 	// _ "github.com/mattn/go-adodb"
 	_ "github.com/lib/pq"
@@ -48,53 +48,53 @@ type DB struct {
 	Conn      *sql.DB
 	Chan      chan DBMessage
 	AsyncChan chan DBInsert
-	
+
 	CurChanNum uint64
-	
+
 	MsgList *list.List
 }
 
 //Init 初始化数据库
 func (o *DB) Init() error {
 	log.Info("[db] service startup ...")
-	
+
 	host := config.GetWithDef(config.Db, config.DbHost, "127.0.0.1")
-	port := config.GetWithDef(config.Db, config.DbHost, "3306")
-	user := config.GetWithDef(config.Db, config.DbHost, "root")
-	pass := config.GetWithDef(config.Db, config.DbHost, "123123")
-	name := config.GetWithDef(config.Db, config.DbHost, "zydb")
-	
+	port := config.GetWithDef(config.Db, config.DbPort, "3306")
+	user := config.GetWithDef(config.Db, config.DbUser, "root")
+	pass := config.GetWithDef(config.Db, config.DbPass, "123123")
+	name := config.GetWithDef(config.Db, config.DbName, "zydb")
+
 	// source := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s", user, pass, host, port, name)
 	source := fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=disable", host, port, user, pass, name)
 	log.Info("[db] source: %s", source)
-	
+
 	// db, err := sql.Open("mysql", source)
 	db, err := sql.Open("postgres", source)
 	// db, err := sql.Open("adodb", "Provider=SQLOLEDB;Data Source=192.168.8.180;Initial Catalog=U3DMDM;User ID=sa;Password=123123")
 	if err != nil {
 		return err
 	}
-	
+
 	//持久化时，不能关闭
 	// defer db.Close()
-	
+
 	err = db.Ping()
 	if err != nil {
 		return err
 	}
-	
+
 	o.Conn = db
 	o.Conn.SetMaxIdleConns(DB_MAX_WORKER)
 	o.Conn.SetMaxOpenConns(DB_MAX_WORKER)
-	
+
 	o.CurChanNum = 0
 	o.Chan = make(chan DBMessage)
 	o.AsyncChan = make(chan DBInsert)
-	
+
 	for i := 0; i < DB_MAX_WORKER; i++ {
 		go o.Worker(o.Chan, o.AsyncChan, i)
 	}
-	
+
 	log.Signal("[db] service finish and start worker", DB_MAX_WORKER)
 	return nil
 }
@@ -112,7 +112,7 @@ func (o *DB) Execute(sql string, args ...interface{}) error {
 //Worker 工作线程
 func (o *DB) Worker(ch <-chan DBMessage, ach <-chan DBInsert, proc int) {
 	defer core.Panic()
-	
+
 	for {
 		select {
 		case msg := <-ch:

@@ -5,11 +5,6 @@ import (
 )
 
 const (
-	Logger        = "log"
-	LoggerLevel   = "level"
-	LoggerOutput  = "output"
-	LoggerCsvHead = "csv_head"
-	
 	Db     = "db"
 	DbHost = "host"
 	DbPort = "host"

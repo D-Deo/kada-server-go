@@ -7,7 +7,7 @@ import (
 	
 	"kada/server/config"
 	"kada/server/core"
-	"kada/server/service/log"
+	"kada/server/log"
 )
 
 // var _server *Server

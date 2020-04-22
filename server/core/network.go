@@ -22,13 +22,6 @@ type GateResponse struct {
 	Msg  string `json:"msg"`
 }
 
-type Message struct {
-	Handle string
-	Action string
-	Args   interface{}
-	Back   interface{}
-}
-
 type Session struct {
 	Id     string
 	Chan   chan []byte
