@@ -1,5 +1,7 @@
 # kada-server-go
 
+[wiki](https://github.com/D-Deo/kada-server-go/wiki)
+
 ## 【Redis】
 
 ```go
