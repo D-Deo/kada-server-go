@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -9,11 +10,23 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+const (
+	NoFoundError string = "mongo: no documents in result"
+)
+
 // 查询参数
 type Filter bson.M
 
 type Client struct {
 	database *mongo.Database // 数据库实例
+}
+
+func NewClient(uri string, db string) *Client {
+	client := new(Client)
+	if err := client.Connect(uri, db); err != nil {
+		log.Panicf("[mongo] connect uri(%s) db(%s) err: %v", uri, db, err)
+	}
+	return client
 }
 
 func (o *Client) Connect(uri string, db string) error {
