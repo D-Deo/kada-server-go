@@ -2,6 +2,7 @@ package mongo
 
 import (
 	"context"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"log"
 	"time"
 
@@ -13,6 +14,9 @@ import (
 const (
 	NoFoundError string = "mongo: no documents in result"
 )
+
+// Mongo主键
+type ObjectId primitive.ObjectID
 
 // 查询参数
 type Filter bson.M
