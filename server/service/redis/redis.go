@@ -99,15 +99,6 @@ func (o *Client) HGetAll(key string) map[string]string {
 	return ret
 }
 
-func (o *Client) ZRANGEBYSCORE(zset string, min string, max string) map[string]string {
-	ret, err := StringMap(o.Exec("ZRANGEBYSCORE", zset, min, max))
-	if err != nil {
-		log.Warn("[redis] zrangebyscore %s %s %s err: %v", zset, min, max, err)
-		return nil
-	}
-	return ret
-}
-
 func (o *Client) NoInclude(num int) string {
 	return fmt.Sprintf("(%d", num)
 }
