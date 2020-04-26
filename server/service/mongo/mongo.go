@@ -18,6 +18,10 @@ const (
 // Mongo主键
 type ObjectId primitive.ObjectID
 
+func NewObjectId() ObjectId {
+	return ObjectId(primitive.NewObjectIDFromTimestamp(time.Now()))
+}
+
 // 查询参数
 type Filter bson.M
 
