@@ -119,7 +119,7 @@ func (o *Client) UpsertOne(collection string, filter Filter, document interface{
 	return nil
 }
 
-// 删除数据
+// 删除数据（单个）
 func (o *Client) DeleteOne(collection string, filter Filter) error {
 	if err := o.Ping(); err != nil {
 		return err
@@ -129,6 +129,21 @@ func (o *Client) DeleteOne(collection string, filter Filter) error {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	if _, err := collect.DeleteOne(ctx, filter); err != nil {
+		return err
+	}
+	return nil
+}
+
+// 删除数据
+func (o *Client) Delete(collection string, filter Filter) error {
+	if err := o.Ping(); err != nil {
+		return err
+	}
+
+	collect := o.database.Collection(collection)
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	if _, err := collect.DeleteMany(ctx, filter); err != nil {
 		return err
 	}
 	return nil
