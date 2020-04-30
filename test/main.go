@@ -1,9 +1,9 @@
 package main
 
 import (
+	"kada/server/console"
 	"kada/server/core"
 	"kada/server/log"
-	"kada/server/service/console"
 	"kada/server/utils/config"
 	"kada/test/user"
 	"runtime"
