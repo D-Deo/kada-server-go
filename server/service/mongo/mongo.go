@@ -3,6 +3,7 @@ package mongo
 import (
 	"context"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 	"log"
 	"time"
 
@@ -68,6 +69,25 @@ func (o *Client) FindOne(collection string, filter Filter, result interface{}) e
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	return collect.FindOne(ctx, filter).Decode(result)
+}
+
+func (o *Client) CreateTTLIndex(collection string, key string) error {
+	if err := o.Ping(); err != nil {
+		return err
+	}
+
+	collect := o.database.Collection(collection)
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	indexModel := mongo.IndexModel{
+		Keys:    bsonx.Doc{{key, bsonx.Int32(1)}},
+		Options: options.Index().SetExpireAfterSeconds(1 * 24 * 3600),
+	}
+
+	if _, err := collect.Indexes().CreateOne(ctx, indexModel); err != nil {
+		return err
+	}
+	return nil
 }
 
 // 插入数据
