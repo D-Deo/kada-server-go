@@ -16,8 +16,18 @@ const (
 	NoFoundError string = "mongo: no documents in result"
 )
 
-// Mongo主键
+// Mongo 主键
 type ObjectId primitive.ObjectID
+
+// Mongo 验证参数
+type Auth options.Credential
+
+// Mongo 连接参数
+type Options options.ClientOptions
+
+func (o *Options) SetAuth(auth *Auth) {
+	o.Auth = (*options.Credential)(auth)
+}
 
 func NewObjectId() ObjectId {
 	return ObjectId(primitive.NewObjectIDFromTimestamp(time.Now()))
@@ -27,19 +37,25 @@ func NewObjectId() ObjectId {
 type Filter bson.M
 
 type Client struct {
+	opts     *options.ClientOptions
 	database *mongo.Database // 数据库实例
 }
 
 func NewClient(uri string, db string) *Client {
 	client := new(Client)
-	if err := client.Connect(uri, db); err != nil {
+	client.opts = options.Client().ApplyURI(uri)
+	if err := client.Connect(db); err != nil {
 		log.Panicf("[mongo] connect uri(%s) db(%s) err: %v", uri, db, err)
 	}
 	return client
 }
 
-func (o *Client) Connect(uri string, db string) error {
-	client, err := mongo.NewClient(options.Client().ApplyURI(uri))
+func (o *Client) SetOptions(opts *Options) {
+	o.opts = (*options.ClientOptions)(opts)
+}
+
+func (o *Client) Connect(db string) error {
+	client, err := mongo.NewClient(o.opts)
 	if err != nil {
 		return err
 	}
