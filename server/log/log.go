@@ -23,9 +23,7 @@ var (
 	_c = flag.Bool("c", false, "log output console")
 )
 
-func init() {
-	flag.Parse()
-
+func Init() {
 	var level Level
 	switch *_l {
 	case "debug":
