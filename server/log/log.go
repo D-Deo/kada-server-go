@@ -1,7 +1,6 @@
 package log
 
 import (
-	"flag"
 	"log"
 )
 
@@ -18,26 +17,16 @@ const (
 
 var (
 	_logger *Logger
-
-	_l = flag.String("l", "info", "log output level")
-	_c = flag.Bool("c", false, "log output console")
 )
 
-func Init() {
-	var level Level
-	switch *_l {
-	case "debug":
-		level = LDebug
-	case "info":
-		level = LInfo
-	case "warn":
-		level = LWarn
-	case "error":
-		level = LError
-	default:
-		level = LInfo
-	}
-	_logger = NewLogger(level, *_c)
+func init() {
+	_logger = NewLogger(LDebug, true)
+}
+
+// 设置参数
+func SetOptions(level Level, console bool) {
+	_logger.Option.Level = level
+	_logger.Option.Console = console
 }
 
 // 结构化
