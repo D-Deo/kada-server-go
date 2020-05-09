@@ -7,7 +7,7 @@ import (
 const (
 	Db     = "db"
 	DbHost = "host"
-	DbPort = "host"
+	DbPort = "port"
 	DbUser = "user"
 	DbPass = "pass"
 	DbName = "name"
