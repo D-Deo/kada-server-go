@@ -76,6 +76,26 @@ func (o *Client) Ping() error {
 }
 
 // 查找数据
+func (o *Client) Find(collection string, filter Filter, results interface{}) error {
+	if err := o.Ping(); err != nil {
+		return err
+	}
+
+	collect := o.database.Collection(collection)
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	cursor, err := collect.Find(ctx, filter)
+	if err != nil {
+		return err
+	}
+	defer cursor.Close(ctx)
+	if err := cursor.All(ctx, results); err != nil {
+		return err
+	}
+	return nil
+}
+
+// 查找数据（单个）
 func (o *Client) FindOne(collection string, filter Filter, result interface{}) error {
 	if err := o.Ping(); err != nil {
 		return err
