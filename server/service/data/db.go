@@ -11,8 +11,8 @@ import (
 	"database/sql"
 
 	// _ "github.com/go-sql-driver/mysql"
-	// _ "github.com/mattn/go-adodb"
-	_ "github.com/lib/pq"
+	_ "github.com/denisenkom/go-mssqldb"
+	//_ "github.com/lib/pq"
 )
 
 const DB_MAX_WORKER = 100
