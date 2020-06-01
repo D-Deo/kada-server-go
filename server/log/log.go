@@ -1,6 +1,7 @@
 package log
 
 import (
+	"io"
 	"log"
 )
 
@@ -27,6 +28,11 @@ func init() {
 func SetOptions(level Level, console bool) {
 	_logger.Option.Level = level
 	_logger.Option.Console = console
+}
+
+// 文件写入器
+func GetWriter() io.Writer {
+	return _logger.Writer()
 }
 
 // 结构化

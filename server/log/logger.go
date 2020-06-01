@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/issue9/term/colors"
 	"github.com/longbozhan/timewriter"
+	"io"
 	"log"
 	"time"
 )
@@ -33,6 +34,10 @@ func NewLogger(level Level, console bool) *Logger {
 	}
 	logger.Logger = log.New(writer, "", 0)
 	return logger
+}
+
+func (o *Logger) Writer() io.Writer {
+	return o.Logger.Writer()
 }
 
 // 结构化
