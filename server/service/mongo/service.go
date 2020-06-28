@@ -21,7 +21,7 @@ func Set(name string, client *Client) {
 func Get(name string) *Client {
 	client, ok := clients[name]
 	if !ok {
-		log.Panicf("[redis] no found redis client: %s", name)
+		log.Panicf("[redis] no found mongo client: %s", name)
 	}
 	return client
 }
