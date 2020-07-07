@@ -3,7 +3,6 @@ package log
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/issue9/term/colors"
 	"github.com/longbozhan/timewriter"
 	"io"
 	"log"
@@ -65,44 +64,31 @@ func (o *Logger) Output(level Level, output string) {
 
 	switch level {
 	case LDebug:
-		o.Write(level, "[D]", output, colors.Cyan, ts)
+		o.Write(level, "[D]", output, ts)
 	case LInfo:
-		o.Write(level, "[I]", output, colors.White, ts)
+		o.Write(level, "[I]", output, ts)
 	case LSignal:
-		o.Write(level, "[S]", output, colors.Green, ts)
+		o.Write(level, "[S]", output, ts)
 	case LWarn:
-		o.Write(level, "[W]", output, colors.Yellow, ts)
+		o.Write(level, "[W]", output, ts)
 	case LError:
-		o.Write(level, "[E]", output, colors.Red, ts)
+		o.Write(level, "[E]", output, ts)
 	default:
 		break
 	}
 }
 
 // 写入日志
-func (o *Logger) Write(level Level, tag string, output string, color colors.Color, ts string) {
+func (o *Logger) Write(level Level, tag string, output string, ts string) {
 	if o.Option.Level >= level {
-		var fields []byte
-		if o.Fields != nil {
-			fields, _ = json.Marshal(o.Fields)
-		}
 		if o.Option.Console {
-			if len(fields) > 0 {
-				colors.Println(color, colors.Default, fmt.Sprintf("%s %-26s %s %s", tag, ts, output, string(fields)))
-			} else {
-				colors.Println(color, colors.Default, fmt.Sprintf("%s %-26s %s", tag, ts, output))
-			}
+			fmt.Printf("%s %-26s %s \n", tag, ts, output)
 		}
 		var a []interface{}
 		a = append(a, ts)
 		a = append(a, output)
 		o.Logger.SetPrefix(tag)
-		if len(fields) > 0 {
-			a = append(a, string(fields))
-			o.Logger.Printf(" %-15s %s %s", a...)
-		} else {
-			o.Logger.Printf(" %-15s %s", a...)
-		}
+		o.Logger.Printf(" %-15s %s", a...)
 	}
 }
 
