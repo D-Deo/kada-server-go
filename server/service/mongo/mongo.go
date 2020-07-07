@@ -17,7 +17,7 @@ const (
 )
 
 // Mongo 主键
-type ObjectId primitive.ObjectID
+type ObjectId = primitive.ObjectID
 
 // Mongo 验证参数
 type Auth options.Credential
@@ -34,6 +34,17 @@ func NewObjectId() ObjectId {
 }
 
 // 查询参数
+//  != ($ne) 不等
+//  >  ($gt) 大于
+//  <  ($lt) 小于
+//  >= ($gte) 大于等于
+//  <= ($lte) 小于等于
+//  in ($in) 包含
+//  or ($or) 或者
+//  set  ($set) 设置某个字段
+//  inc  ($inc) 增加某个字段数值
+//  push ($push) 数组中增加一个值
+//  pull ($pull) 数组中删除一个值
 type Filter bson.M
 
 type Client struct {
