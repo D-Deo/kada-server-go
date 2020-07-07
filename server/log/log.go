@@ -24,6 +24,10 @@ func init() {
 	_logger = NewLogger(LDebug, true)
 }
 
+func Get() *Logger {
+	return _logger
+}
+
 // 设置参数
 func SetOptions(level Level, console bool) {
 	_logger.Option.Level = level
