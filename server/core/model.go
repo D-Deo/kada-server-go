@@ -4,7 +4,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/bsonrw"
 	"go.mongodb.org/mongo-driver/bson/bsontype"
-	"kada/server/log"
+	"strconv"
 	"time"
 )
 
@@ -33,27 +33,29 @@ func (o *Time) UnmarshalBSONValue(p bsontype.Type, data []byte) (err error) {
 	if err := decoder.Decode(&t); err != nil {
 		return err
 	}
-	log.Debug("[UnmarshalBSONValue] %v, %v", t.UTC(), t.Local())
+	//log.Debug("[UnmarshalBSONValue] %v, %v", t.UTC(), t.Local())
 	*o = Time(t.Local())
 	return
 }
 
 func (o Time) MarshalBSONValue() (bsontype.Type, []byte, error) {
-	t := time.Time(o)
-	log.Debug("[MarshalBSONValue] %v, %v", t.UTC(), t.Local())
+	//t := time.Time(o)
+	//log.Debug("[MarshalBSONValue] %v, %v", t.UTC(), t.Local())
 	return bson.MarshalValue(time.Time(o).Local())
 }
 
 func (o *Time) UnmarshalJSON(data []byte) (err error) {
-	now, err := time.ParseInLocation(`"`+timeFormat+`"`, string(data), time.Local)
+	now := time.Unix(int64(Int(string(data))), 0)
 	*o = Time(now)
 	return
 }
 
 func (o Time) MarshalJSON() ([]byte, error) {
-	b := make([]byte, 0, len(timeFormat)+2)
-	b = append(b, '"')
-	b = time.Time(o).AppendFormat(b, timeFormat)
-	b = append(b, '"')
-	return b, nil
+	return []byte(strconv.Itoa(int(time.Time(o).Unix()))), nil
+	//b := make([]byte, 0, len(timeFormat)+2)
+	//b = append(b, '"')
+	//b = time.Time(o).AppendFormat(b, timeFormat)
+	//b = append(b, '"')
+	//log.Debug("[MarshalJSON] %s, %v", string(b), b)
+	//return b, nil
 }
