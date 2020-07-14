@@ -88,15 +88,15 @@ func ShowName(uid uint32, username string, phone string, nickname string) string
 	if nickname != "" {
 		return nickname
 	}
-	
+
 	if username != "" {
 		return username
 	}
-	
+
 	if phone != "" {
 		return phone
 	}
-	
+
 	return strconv.Itoa(int(uid))
 }
 
@@ -133,11 +133,16 @@ func PrintBuffer(buffer []byte) string {
 	return ss
 }
 
-// 转 int 输出
+// string 转 int
 func Int(str string) int {
 	i, err := strconv.Atoi(str)
 	if err != nil {
 		return 0
 	}
 	return i
+}
+
+// int 转 string
+func String(i int) string {
+	return strconv.Itoa(i)
 }
