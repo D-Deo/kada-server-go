@@ -7,7 +7,7 @@ require (
 	github.com/apache/thrift v0.13.0
 	github.com/denisenkom/go-mssqldb v0.0.0-20200428022330-06a60b6afbbc
 	github.com/fatih/color v1.9.0
-	github.com/gin-gonic/gin v1.6.3
+	github.com/gin-gonic/gin v1.6.3 // indirect
 	github.com/go-ole/go-ole v1.2.4 // indirect
 	github.com/gomodule/redigo v2.0.0+incompatible
 	github.com/larspensjo/config v0.0.0-20160228172812-b6db95dc6321
